@@ -18,6 +18,29 @@ public class fp {
         int bE = (b >> 23) & 255;
         int bF =  b & 0x7FFFFF;
 
+        int cS, cE, cF;
+
+        //check for zero
+        if (aE == 0) { return b; }
+        if (bE == 0) { return a; }
+
+        //check for NaN operator
+        if (aE == 0b11111111 || bE == 0b11111111) { return Float.floatToIntBits(Float.NaN); }
+
+        //check for infinities
+        if (a == Float.floatToIntBits(Float.POSITIVE_INFINITY) && b == Float.floatToIntBits(Float.NEGATIVE_INFINITY) ) {
+            return Float.floatToIntBits(Float.NaN);
+        }
+        if (b == Float.floatToIntBits(Float.POSITIVE_INFINITY) && a == Float.floatToIntBits(Float.NEGATIVE_INFINITY) ) {
+            return Float.floatToIntBits(Float.NaN);
+        }
+        if (a == Float.floatToIntBits(Float.POSITIVE_INFINITY) && b == Float.floatToIntBits(Float.POSITIVE_INFINITY) ) {
+            return Float.floatToIntBits(Float.POSITIVE_INFINITY);
+        }
+        if (a == Float.floatToIntBits(Float.NEGATIVE_INFINITY) && b == Float.floatToIntBits(Float.NEGATIVE_INFINITY) ) {
+            return Float.floatToIntBits(Float.NEGATIVE_INFINITY);
+        }
+
         //add back the 1 in front of the decimal point, (increment exponent?)
         //numbers are now in the form 0.x
         aF += 0x800000;
@@ -27,8 +50,11 @@ public class fp {
         aF = aF >> (bE - aE);
         aE = bE;
 
-        //add the significands together
-        int cF = aF + bF;
+        //if the sign bits are the same, we add, if not, we subtract
+        cF = (aS == bS) ? (aF + bF) : (Integer.max(aF, bF) - Integer.min(aF, bF));
+
+        //set the sign bit of c equal to the sign bit of the larger number
+        cS = (Integer.max(aF, bF) == aF) ? aS : bS;
 
         //we need 8 leading zeroes for a properly normalized sum
         //(int is 32 bits; result should be 8 zeroes and a 1, followed by 23 bit mantissa)
@@ -45,10 +71,8 @@ public class fp {
         cF -= 0x800000;
 
         //set the add the shift amount to the exponent
-        int cE = aE + shiftAmt;
+        cE = aE + shiftAmt;
 
-        //fix! incorrect! TODO! assumes that sign doesn't change
-        int cS = aS;
 
         //reassemble integer result
         int c = cF;
@@ -56,7 +80,6 @@ public class fp {
         c += cS << 31;
 
         return c;
-
     }
 
     public int mul(int a, int b) {
