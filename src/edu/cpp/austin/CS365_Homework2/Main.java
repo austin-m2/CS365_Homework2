@@ -9,8 +9,13 @@ public class Main {
         int v_1875 = 0xBE400000; // -0.1875
         int v5     = 0xC0A00000; // -5.0
 
-	    int sum = fp.add(Float.floatToIntBits(Float.POSITIVE_INFINITY), Float.floatToIntBits(Float.NEGATIVE_INFINITY));
-        System.out.println(Float.intBitsToFloat(sum));
+//	    int sum = fp.add(Float.floatToIntBits(Float.MAX_VALUE), Float.floatToIntBits(10f));
+//        System.out.println(sum);
+
+        int product = fp.mul(v24_25, v24_25);
+        System.out.println(Float.intBitsToFloat(product));
+        //System.out.println(24.25f * 24.25f);
+
 
 
 

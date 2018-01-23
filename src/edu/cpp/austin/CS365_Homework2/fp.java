@@ -41,7 +41,7 @@ public class fp {
             return Float.floatToIntBits(Float.NEGATIVE_INFINITY);
         }
 
-        //add back the 1 in front of the decimal point, (increment exponent?)
+        //add back the 1 in front of the decimal point
         //numbers are now in the form 0.x
         aF += 0x800000;
         bF += 0x800000;
@@ -83,7 +83,47 @@ public class fp {
     }
 
     public int mul(int a, int b) {
+        //split numbers into sign, exponent, and fraction
+        int aS = (a >> 31) & 1;
+        int aE = (a >> 23) & 255;
+        int aF =  a & 0x7FFFFF;
 
-        return 0;
+        int bS = (b >> 31) & 1;
+        int bE = (b >> 23) & 255;
+        int bF =  b & 0x7FFFFF;
+
+        int cS, cE;
+        long cF;
+
+        //check for zero
+        if (aE == 0) { return a; }
+        if (bE == 0) { return b; }
+
+        //check for NaN
+        if (aE == 0b11111111 || bE == 0b11111111) { return Float.floatToIntBits(Float.NaN); }
+
+        //check for infinities
+        if (a == Float.floatToIntBits(Float.POSITIVE_INFINITY) && b == Float.floatToIntBits(Float.NEGATIVE_INFINITY) ) {
+            return Float.floatToIntBits(Float.NaN);
+        }
+        if (b == Float.floatToIntBits(Float.POSITIVE_INFINITY) && a == Float.floatToIntBits(Float.NEGATIVE_INFINITY) ) {
+            return Float.floatToIntBits(Float.NaN);
+        }
+        if (a == Float.floatToIntBits(Float.POSITIVE_INFINITY) && b == Float.floatToIntBits(Float.POSITIVE_INFINITY) ) {
+            return Float.floatToIntBits(Float.POSITIVE_INFINITY);
+        }
+        if (a == Float.floatToIntBits(Float.NEGATIVE_INFINITY) && b == Float.floatToIntBits(Float.NEGATIVE_INFINITY) ) {
+            return Float.floatToIntBits(Float.NEGATIVE_INFINITY);
+        }
+
+        //add back the 1 in front of the decimal point
+        //numbers are now in the form 0.x
+        aF += 0x800000;
+        bF += 0x800000;
+
+
+        cF = aF * bF;
+        int sigFigs = 64 - Long.numberOfLeadingZeros(cF);
+
     }
 }
