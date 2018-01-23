@@ -1,3 +1,5 @@
+//CS365 Homework 2
+//Austin Morris
 package edu.cpp.austin.CS365_Homework2;
 
 public class fp {
@@ -116,14 +118,40 @@ public class fp {
             return Float.floatToIntBits(Float.NEGATIVE_INFINITY);
         }
 
+        //calculate exponent of product
+        cE = aE + bE - 127;
+
+        //find sign bit
+        cS = aS ^ bS;
+
         //add back the 1 in front of the decimal point
         //numbers are now in the form 0.x
         aF += 0x800000;
         bF += 0x800000;
 
+        //multiply mantissa values
+        //the product is in the lower 48 bits of cF (2 bits are to the left of binary point
+        cF = (long) aF * (long) bF;
 
-        cF = aF * bF;
-        int sigFigs = 64 - Long.numberOfLeadingZeros(cF);
+        //normalize value
+        if (Long.highestOneBit(cF) == (long) Math.pow(2, 47)) {
+            cF = cF >> 1;
+            cE += 1;
+        }
+        cF = cF << 1;
+
+        //truncate to 24 bits
+        cF = cF >> 24;
+
+        //remove hidden bit
+        //cF -= 0x800000;
+
+        //reassemble integer result
+        int c = ((int) cF & 0x7FFFFF);
+        c += cE << 23;
+        c += cS << 31;
+
+        return c;
 
     }
 }

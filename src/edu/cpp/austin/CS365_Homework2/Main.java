@@ -12,7 +12,7 @@ public class Main {
 //	    int sum = fp.add(Float.floatToIntBits(Float.MAX_VALUE), Float.floatToIntBits(10f));
 //        System.out.println(sum);
 
-        int product = fp.mul(v24_25, v24_25);
+        int product = fp.mul(Float.floatToIntBits(0f), Float.floatToIntBits(4.2f));
         System.out.println(Float.intBitsToFloat(product));
         //System.out.println(24.25f * 24.25f);
 
